@@ -1,0 +1,361 @@
+const { adams } = require("../Ibrahim/adams");
+const axios = require("axios");
+const ytSearch = require("yt-search");
+
+// API key – set it if the service requires one
+const apiKey = ''; // e.g., 'your_api_key_here'
+
+// Base APIs – we'll append the video URL and possibly the API key
+const audioApis = [
+    'https://apiskeith.top/api/download/ytdlv2',
+    'https://apiskeith.top/api/download/ytdl',
+    'https://apiskeith.top/download/ytmp3',
+    'https://apiskeith.top/youtube/mp3'
+];
+
+const videoApis = [
+    'https://apiskeith.top/api/download/ytmp4',
+    'https://apiskeith.top/downloaders/ytmp4',
+    'https://apiskeith.top/download/ytmp4',
+    'https://apiskeith.top/api/download/ytv',
+    'https://apiskeith.top/youtube/mp4',
+    'https://apiskeith.top/api/download/ytvideo'
+];
+
+// Common headers to mimic a real browser
+const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*',
+    'Referer': 'https://apiskeith.top/'
+};
+
+// Store active download sessions
+const downloadSessions = new Map();
+
+adams({
+    nomCom: "play",
+    aliases: ["song", "video", "music", "yt"],
+    categorie: "Download",
+    reaction: "🎵"
+}, async (dest, zk, commandOptions) => {
+    const { arg, ms, repondre } = commandOptions;
+
+    if (!arg[0]) {
+        return repondre("Please provide a song/video name.");
+    }
+
+    const query = arg.join(" ");
+
+    try {
+        // Search YouTube
+        const searchResults = await ytSearch(query);
+        if (!searchResults.videos.length) {
+            return repondre("No results found for your search.");
+        }
+
+        const video = searchResults.videos[0];
+        const videoUrl = video.url;
+
+        // Create numbered options
+        const downloadOptions = `
+*📥 DOWNLOAD OPTIONS - Reply with number:*
+
+*1.* 🎵 Download Audio
+*2.* 🎥 Download Video  
+*3.* 📢 Our Channel
+
+_Reply with any number above to proceed_
+_This menu stays active - you can use it multiple times_`;
+
+        // Send result with numbered options
+        const sentMessage = await zk.sendMessage(dest, {
+            image: { url: video.thumbnail },
+            caption: `*${video.title}*\n\n🎬 *Channel:* ${video.author.name}\n⏱️ *Duration:* ${video.timestamp}\n👀 *Views:* ${video.views}\n\n${downloadOptions}`,
+            contextInfo: {
+                externalAdReply: {
+                    title: video.title,
+                    body: "Available on YouTube",
+                    mediaType: 2,
+                    thumbnailUrl: video.thumbnail,
+                    mediaUrl: video.url,
+                    sourceUrl: video.url
+                }
+            }
+        }, { quoted: ms });
+
+        // Store session data
+        const sessionId = sentMessage.key.id;
+        downloadSessions.set(sessionId, {
+            videoUrl: videoUrl,
+            videoTitle: video.title,
+            videoThumbnail: video.thumbnail,
+            dest: dest,
+            createdAt: Date.now()
+        });
+
+        // Set up persistent event listener only once
+        if (!zk._downloadHandlerAttached) {
+            zk._downloadHandlerAttached = true;
+            zk.ev.on("messages.upsert", async (update) => {
+                const message = update.messages[0];
+                if (!message?.message) return;
+
+                const stanzaId = message.message.extendedTextMessage?.contextInfo?.stanzaId;
+                if (!stanzaId || !downloadSessions.has(stanzaId)) return;
+
+                const responseText = message.message.extendedTextMessage?.text?.trim() || 
+                                   message.message.conversation?.trim();
+                if (!responseText) return;
+
+                const selectedOption = parseInt(responseText);
+                const userJid = message.key.participant || message.key.remoteJid;
+                const session = downloadSessions.get(stanzaId);
+
+                try {
+                    switch (selectedOption) {
+                        case 1:
+                            await zk.sendMessage(session.dest, { 
+                                text: "🔄 Just a moment, downloading your audio...",
+                                mentions: [userJid]
+                            }, { quoted: message });
+                            await handleDownload('audio', session.videoUrl, session.dest, zk, message);
+                            break;
+
+                        case 2:
+                            await zk.sendMessage(session.dest, { 
+                                text: "🔄 Just a moment, downloading your video...",
+                                mentions: [userJid]
+                            }, { quoted: message });
+                            await handleDownload('video', session.videoUrl, session.dest, zk, message);
+                            break;
+
+                        case 3:
+                            await zk.sendMessage(session.dest, {
+                                text: "📢 *Our Official Channel*\n\nJoin our WhatsApp channel for updates:\nwhatsapp.com/channel/0029VbB4nox4Y9lqVl2X8n3m\n\nYugo app by sir bravin:\ngo.bwmxmd.online",
+                                mentions: [userJid]
+                            }, { quoted: message });
+                            break;
+
+                        default:
+                            await zk.sendMessage(session.dest, {
+                                text: "*❌ Invalid option. Please reply with 1, 2, or 3.*\n\n*Available options:*\n*1.* 🎵 Download Audio\n*2.* 🎥 Download Video\n*3.* 📢 Our Channel",
+                                mentions: [userJid]
+                            }, { quoted: message });
+                            break;
+                    }
+                } catch (error) {
+                    console.error("Download reply handler error:", error);
+                    await zk.sendMessage(session.dest, { 
+                        text: "❌ Error processing your request. Please try again.",
+                        mentions: [userJid]
+                    }, { quoted: message });
+                }
+            });
+        }
+
+        // Clean up old sessions (older than 1 hour)
+        const oneHourAgo = Date.now() - (60 * 60 * 1000);
+        for (const [sessionId, session] of downloadSessions.entries()) {
+            if (session.createdAt < oneHourAgo) {
+                downloadSessions.delete(sessionId);
+            }
+        }
+
+    } catch (error) {
+        console.error("Search error:", error);
+        return repondre("Error searching for the video.");
+    }
+});
+
+// ---------- IMPROVED DOWNLOAD HANDLER ----------
+async function handleDownload(type, videoUrl, dest, zk, originalMsg) {
+    const apis = type === 'audio' ? audioApis : videoApis;
+    const encodedUrl = encodeURIComponent(videoUrl);
+
+    let downloadUrl = null;
+    let lastError = null;
+
+    // Try each API with two possible parameter names: url and link
+    for (const apiBase of apis) {
+        for (const param of ['url', 'link']) {
+            try {
+                // Build the full request URL
+                let requestUrl = `${apiBase}?${param}=${encodedUrl}`;
+                // Append API key if provided
+                if (apiKey) {
+                    requestUrl += `&apikey=${encodeURIComponent(apiKey)}`;
+                }
+
+                console.log(`Trying: ${requestUrl}`);
+
+                const response = await axios.get(requestUrl, {
+                    headers,
+                    timeout: 15000,
+                    maxRedirects: 5
+                });
+
+                // Attempt to extract download URL from response
+                const extracted = extractDownloadUrl(response.data);
+                if (extracted && extracted.startsWith('http')) {
+                    downloadUrl = extracted;
+                    console.log(`✅ Success with: ${requestUrl}`);
+                    break;
+                } else {
+                    console.log(`No URL in response from ${requestUrl}:`, 
+                        JSON.stringify(response.data).substring(0, 200));
+                }
+            } catch (e) {
+                console.log(`❌ Failed (${param}): ${e.message}`);
+                lastError = e;
+            }
+        }
+        if (downloadUrl) break; // stop trying other APIs once we have a URL
+    }
+
+    if (!downloadUrl) {
+        console.error("All APIs failed:", lastError);
+        return await zk.sendMessage(dest, { 
+            text: `❌ Failed to download ${type}. All available services are currently unavailable. Please try again later.` 
+        }, { quoted: originalMsg });
+    }
+
+    // ----- Validate the download URL -----
+    try {
+        const headResponse = await axios.head(downloadUrl, {
+            headers,
+            timeout: 10000,
+            maxRedirects: 5
+        });
+
+        const contentType = headResponse.headers['content-type'] || '';
+        const contentLength = parseInt(headResponse.headers['content-length'] || '0');
+
+        // Check if it's a media file
+        const isValidAudio = type === 'audio' && contentType.includes('audio/');
+        const isValidVideo = type === 'video' && contentType.includes('video/');
+
+        if (!isValidAudio && !isValidVideo) {
+            console.warn(`Invalid content-type: ${contentType}`);
+            return await zk.sendMessage(dest, { 
+                text: `❌ The download link does not point to a valid ${type} file. (Received: ${contentType})` 
+            }, { quoted: originalMsg });
+        }
+
+        // Optional: Check file size (WhatsApp limits: audio ~100MB, video ~64MB)
+        const maxSize = type === 'audio' ? 100 * 1024 * 1024 : 64 * 1024 * 1024;
+        if (contentLength > maxSize) {
+            return await zk.sendMessage(dest, { 
+                text: `❌ File too large (${(contentLength/1024/1024).toFixed(1)} MB). Maximum allowed is ${maxSize/1024/1024} MB.` 
+            }, { quoted: originalMsg });
+        }
+    } catch (error) {
+        console.error("Download URL validation failed:", error.message);
+        return await zk.sendMessage(dest, { 
+            text: `❌ The download link is not accessible. Please try again later.` 
+        }, { quoted: originalMsg });
+    }
+
+    // ----- Download and send the media -----
+    try {
+        const mediaResponse = await axios.get(downloadUrl, {
+            headers,
+            responseType: 'arraybuffer',
+            timeout: 120000, // 2 minutes for large files
+            maxRedirects: 5,
+            onDownloadProgress: (progressEvent) => {
+                // Optional: log progress
+                // console.log(`Downloaded ${progressEvent.loaded} bytes`);
+            }
+        });
+
+        const mediaBuffer = Buffer.from(mediaResponse.data, 'binary');
+        const finalContentType = mediaResponse.headers['content-type'] || (type === 'audio' ? 'audio/mpeg' : 'video/mp4');
+
+        if (type === 'audio') {
+            await zk.sendMessage(dest, {
+                audio: mediaBuffer,
+                mimetype: finalContentType,
+                contextInfo: {
+                    externalAdReply: {
+                        title: "Your Audio Download",
+                        body: "WHATSAPP BOT",
+                        mediaType: 2,
+                        thumbnailUrl: "https://files.catbox.moe/4n1tap.jpg",
+                        mediaUrl: downloadUrl,
+                        sourceUrl: downloadUrl
+                    }
+                }
+            }, { quoted: originalMsg });
+        } else {
+            await zk.sendMessage(dest, {
+                video: mediaBuffer,
+                mimetype: finalContentType,
+                caption: "Here's your video download",
+                contextInfo: {
+                    externalAdReply: {
+                        title: "Your Video Download",
+                        body: "WHATSAPP BOT",
+                        mediaType: 2,
+                        thumbnailUrl: "https://files.catbox.moe/4n1tap.jpg",
+                        mediaUrl: downloadUrl,
+                        sourceUrl: downloadUrl
+                    }
+                }
+            }, { quoted: originalMsg });
+        }
+    } catch (error) {
+        console.error("Media download error:", error);
+        await zk.sendMessage(dest, { 
+            text: `❌ Error during ${type} download. ${error.message}` 
+        }, { quoted: originalMsg });
+    }
+}
+
+// ---------- ENHANCED URL EXTRACTION ----------
+function extractDownloadUrl(data) {
+    if (!data) return null;
+
+    // Extended list of possible paths (dot notation)
+    const paths = [
+        'download_url', 'url', 'link', 'file', 'result.url',
+        'result.download_url', 'result.link', 'data.url',
+        'data.download_url', 'audio_url', 'video_url',
+        'result.audio_url', 'result.video_url', 'dl_link',
+        'response.url', 'response.download_url'
+    ];
+
+    for (const path of paths) {
+        const value = getNestedValue(data, path);
+        if (value && typeof value === 'string' && value.startsWith('http')) {
+            return value;
+        }
+    }
+
+    // If dot notation fails, recursively search for any http string
+    return findHttpUrl(data);
+}
+
+function getNestedValue(obj, path) {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
+}
+
+function findHttpUrl(obj) {
+    if (!obj || typeof obj !== 'object') return null;
+    if (Array.isArray(obj)) {
+        for (const item of obj) {
+            const url = findHttpUrl(item);
+            if (url) return url;
+        }
+        return null;
+    }
+    for (const value of Object.values(obj)) {
+        if (typeof value === 'string' && value.startsWith('http')) {
+            return value;
+        }
+        if (typeof value === 'object') {
+            const nestedUrl = findHttpUrl(value);
+            if (nestedUrl) return nestedUrl;
+        }
+    }
+    return null;
+}
