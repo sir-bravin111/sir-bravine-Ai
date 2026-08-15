@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TubeDownload · music & video</title>
+  <!-- Font Awesome for icons (YouTube-like feel) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ----- RESET & BASE ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+
+    body {
+      background: #0f0f0f;
+      color: #f1f1f1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px 16px 40px;
+    }
+
+    /* ----- MAIN CARD (youtube-like container) ----- */
+    .app-wrapper {
+      max-width: 1200px;
+      width: 100%;
+      background: #181818;
+      border-radius: 32px;
+      padding: 24px 28px 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+      border: 1px solid #2a2a2a;
+      transition: all 0.2s;
+    }
+
+    /* ----- HEADER / TOP BAR (YouTube style) ----- */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px 12px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #2a2a2a;
+      margin-bottom: 28px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      font-size: 32px;
+      color: #ff0033;
+      background: #1a1a1a;
+      padding: 6px 10px;
+      border-radius: 40px;
+      box-shadow: 0 0 0 1px #2a2a2a;
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ff0033, #ff4d4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-text span {
+      font-weight: 300;
+      -webkit-text-fill-color: #aaa;
+      background: none;
+    }
+
+    .search-box {
+      flex: 1 1 320px;
+      display: flex;
+      align-items: center;
+      background: #222;
+      border-radius: 40px;
+      padding: 0 6px 0 20px;
+      border: 1px solid #3a3a3a;
+      transition: 0.2s;
+    }
+
+    .search-box:focus-within {
+      border-color: #ff0033;
+      box-shadow: 0 0 0 2px rgba(255, 0, 51, 0.3);
+    }
+
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 14px 6px;
+      color: #f1f1f1;
+      font-size: 16px;
+      outline: none;
+      min-width: 100px;
+    }
+
+    .search-box input::placeholder {
+      color: #888;
+      font-weight: 300;
+    }
+
+    .search-box button {
+      background: transparent;
+      border: none;
+      color: #aaa;
+      font-size: 20px;
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: 0.2s;
+      border-radius: 40px;
+    }
+
+    .search-box button:hover {
+      color: #fff;
+      background: #333;
+    }
+
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .user-actions i {
+      font-size: 22px;
+      color: #ccc;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .user-actions i:hover {
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #3a3a3a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #ddd;
+      border: 1px solid #4a4a4a;
+      cursor: pointer;
+    }
+
+    /* ----- HERO: artist + audio/video preview ----- */
+    .hero-section {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 24px 32px;
+      background: #1e1e1e;
+      border-radius: 28px;
+      padding: 24px 28px;
+      margin-bottom: 36px;
+      border: 1px solid #2c2c2c;
+      align-items: center;
+    }
+
+    .artist-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex: 1 1 200px;
+    }
+
+    .artist-picture {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      color: #ff4d4d;
+      border: 2px solid #3a3a3a;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+      flex-shrink: 0;
+    }
+
+    .artist-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .artist-name {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    .artist-sub {
+      font-size: 14px;
+      color: #aaa;
+      margin-top: 4px;
+    }
+
+    .artist-sub i {
+      margin-right: 6px;
+      color: #ff4d4d;
+    }
+
+    .media-previews {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px 28px;
+      flex: 2 1 360px;
+      justify-content: flex-end;
+    }
+
+    .preview-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #252525;
+      padding: 10px 22px 10px 18px;
+      border-radius: 60px;
+      border: 1px solid #333;
+      transition: 0.2s;
+      cursor: default;
+    }
+
+    .preview-item i {
+      font-size: 28px;
+      color: #ff4d4d;
+    }
+
+    .preview-item .label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #ddd;
+    }
+
+    .preview-item .badge {
+      background: #ff0033;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 12px;
+      border-radius: 40px;
+      margin-left: 6px;
+    }
+
+    .preview-item.audio i {
+      color: #1db954;
+    }
+    .preview-item.video i {
+      color: #ff4d4d;
+    }
+
+    /* ----- RESULT GRID (songs & videos) ----- */
+    .section-title {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 4px solid #ff0033;
+      padding-left: 16px;
+    }
+
+    .section-title i {
+      color: #ff4d4d;
+      font-size: 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px 20px;
+      margin-top: 6px;
+    }
+
+    /* card */
+    .media-card {
+      background: #1f1f1f;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #2a2a2a;
+      transition: 0.25s ease;
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .media-card:hover {
+      transform: translateY(-6px);
+      border-color: #ff4d4d;
+      box-shadow: 0 12px 28px rgba(255, 0, 51, 0.15);
+    }
+
+    .card-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: #555;
+      position: relative;
+    }
+
+    .card-thumb i {
+      filter: drop-shadow(0 4px 6px black);
+    }
+
+    .card-thumb .type-tag {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      background: #0f0f0fcc;
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #eee;
+      border: 1px solid #3a3a3a;
+    }
+
+    .card-body {
+      padding: 16px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 17px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-artist {
+      color: #aaa;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-artist i {
+      font-size: 14px;
+      color: #ff4d4d;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      border-top: 1px solid #2c2c2c;
+      padding-top: 14px;
+    }
+
+    .btn-download {
+      background: #ff0033;
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid #ff0033;
+    }
+
+    .btn-download i {
+      font-size: 16px;
+    }
+
+    .btn-download:hover {
+      background: #cc0028;
+      transform: scale(1.02);
+      box-shadow: 0 4px 14px rgba(255, 0, 51, 0.4);
+    }
+
+    .btn-download.secondary {
+      background: #2a2a2a;
+      border-color: #3a3a3a;
+    }
+
+    .btn-download.secondary:hover {
+      background: #3a3a3a;
+    }
+
+    .card-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      color: #888;
+    }
+
+    .card-meta i {
+      margin-right: 4px;
+    }
+
+    /* empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px 20px;
+      color: #666;
+      background: #161616;
+      border-radius: 40px;
+      border: 1px dashed #2a2a2a;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: #3a3a3a;
+    }
+
+    /* footer */
+    .footer-note {
+      margin-top: 32px;
+      text-align: center;
+      color: #555;
+      font-size: 13px;
+      border-top: 1px solid #252525;
+      padding-top: 22px;
+      letter-spacing: 0.2px;
+    }
+
+    .footer-note i {
+      color: #ff4d4d;
+      margin: 0 4px;
+    }
+
+    /* responsive */
+    @media (max-width: 640px) {
+      .app-wrapper { padding: 16px; }
+      .hero-section { flex-direction: column; align-items: stretch; }
+      .media-previews { justify-content: center; }
+      .artist-card { justify-content: center; }
+      .preview-item { padding: 8px 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- ===== TOP BAR = YouTube style ===== -->
+  <div class="top-bar">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fab fa-youtube"></i></div>
+      <div class="logo-text">Tube<span>Download</span></div>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search songs, artists, videos...">
+      <button id="searchBtn"><i class="fas fa-search"></i></button>
+    </div>
+    <div class="user-actions">
+      <i class="fas fa-video"></i>
+      <i class="fas fa-bell"></i>
+      <div class="avatar"><i class="fas fa-user"></i></div>
+    </div>
+  </div>
+
+  <!-- ===== HERO: artist picture + audio/video preview ===== -->
+  <div class="hero-section">
+    <div class="artist-card">
+      <div class="artist-picture">
+        <i class="fas fa-microphone-alt"></i>
+      </div>
+      <div class="artist-info">
+        <div class="artist-name" id="heroArtist">The Weeknd</div>
+        <div class="artist-sub"><i class="fas fa-check-circle"></i> 12.4M subscribers</div>
+      </div>
+    </div>
+    <div class="media-previews">
+      <div class="preview-item audio">
+        <i class="fas fa-music"></i>
+        <span class="label">Audio</span>
+        <span class="badge">320kbps</span>
+      </div>
+      <div class="preview-item video">
+        <i class="fas fa-film"></i>
+        <span class="label">Video</span>
+        <span class="badge">HD</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <i class="fas fa-download" style="color:#ff4d4d; font-size:20px;"></i>
+        <span style="color:#aaa; font-size:14px;">ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION: Songs & Videos grid ===== -->
+  <div class="section-title">
+    <i class="fas fa-headphones-alt"></i> Trending downloads
+  </div>
+
+  <div class="grid" id="mediaGrid">
+    <!-- cards will be injected via JS -->
+  </div>
+
+  <div class="footer-note">
+    <i class="fas fa-download"></i> click download to save · high quality · <i class="fas fa-music"></i> + <i class="fas fa-video"></i>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ----- DATASET (songs & videos with artist, picture style) -----
+    const mediaLibrary = [
+      { id: 1, title: "Blinding Lights", artist: "The Weeknd", type: "audio", duration: "3:20", size: "8.4 MB" },
+      { id: 2, title: "Levitating", artist: "Dua Lipa", type: "audio", duration: "3:23", size: "7.9 MB" },
+      { id: 3, title: "Stay", artist: "The Kid LAROI & Justin Bieber", type: "audio", duration: "2:21", size: "5.7 MB" },
+      { id: 4, title: "Montero (Call Me By Your Name)", artist: "Lil Nas X", type: "video", duration: "4:12", size: "22 MB" },
+      { id: 5, title: "Drivers License", artist: "Olivia Rodrigo", type: "audio", duration: "4:02", size: "9.1 MB" },
+      { id: 6, title: "Peaches", artist: "Justin Bieber feat. Daniel Caesar", type: "video", duration: "3:18", size: "18 MB" },
+      { id: 7, title: "WAP", artist: "Cardi B feat. Megan Thee Stallion", type: "video", duration: "3:07", size: "19 MB" },
+      { id: 8, title: "Positions", artist: "Ariana Grande", type: "audio", duration: "2:52", size: "6.8 MB" },
+    ];
+
+    // references
+    const grid = document.getElementById('mediaGrid');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const heroArtist = document.getElementById('heroArtist');
+
+    // helper: render cards from array
+    function renderCards(items) {
+      if (!items || items.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <div style="font-size:18px; color:#aaa;">No results found</div>
+            <div style="color:#555; margin-top:6px;">try a different keyword</div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      items.forEach(item => {
+        const isAudio = item.type === 'audio';
+        const icon = isAudio ? 'fa-music' : 'fa-film';
+        const typeLabel = isAudio ? 'AUDIO' : 'VIDEO';
+        const badgeColor = isAudio ? '#1db954' : '#ff4d4d';
+        const sizeLabel = item.size || (isAudio ? '6.2 MB' : '18 MB');
+
+        html += `
+          <div class="media-card" data-id="${item.id}">
+            <div class="card-thumb" style="background: ${isAudio ? '#1a1a1a' : '#222'};">
+              <i class="fas ${icon}" style="color:${badgeColor};"></i>
+              <span class="type-tag"><i class="fas ${icon}"></i> ${typeLabel}</span>
+            </div>
+            <div class="card-body">
+              <div class="card-title">${item.title}</div>
+              <div class="card-artist"><i class="fas fa-user-circle"></i> ${item.artist}</div>
+              <div class="card-meta">
+                <span><i class="far fa-clock"></i> ${item.duration || '3:12'}</span>
+                <span><i class="fas fa-database"></i> ${sizeLabel}</span>
+              </div>
+              <div class="card-actions">
+                <button class="btn-download"><i class="fas fa-arrow-down"></i> Download</button>
+                <button class="btn-download secondary"><i class="fas fa-play"></i> Preview</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+
+      // attach download events (simulate)
+      document.querySelectorAll('.btn-download').forEach((btn, index) => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const card = this.closest('.media-card');
+          const title = card?.querySelector('.card-title')?.innerText || 'track';
+          const artist = card?.querySelector('.card-artist')?.innerText?.replace('●', '').trim() || 'artist';
+          // simulate download
+          const blob = new Blob([`🎵 ${title} by ${artist} (downloaded from TubeDownload)`], { type: 'text/plain' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `${title.replace(/\s+/g,'_')}.txt`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          // visual feedback
+          this.innerHTML = '<i class="fas fa-check"></i> Done!';
+          setTimeout(() => { this.innerHTML = '<i class="fas fa-arrow-down"></i> Download'; }, 1800);
+        });
+      });
+
+      // preview buttons (just alert)
+      document.querySelectorAll('.btn-download.secondary').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const card = this.closest('.media-card');
+          const title = card?.querySelector('.card-title')?.innerText || 'track';
+          alert(`🎬 Preview: "${title}" (simulated)`);
+        });
+      });
+    }
+
+    // filter function
+    function filterMedia(query) {
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        // show all
+        renderCards(mediaLibrary);
+        heroArtist.innerText = 'Various Artists';
+        return;
+      }
+      const filtered = mediaLibrary.filter(item => 
+        item.title.toLowerCase().includes(q) || 
+        item.artist.toLowerCase().includes(q) ||
+        item.type.includes(q)
+      );
+      renderCards(filtered);
+      // update hero artist name if at least one result
+      if (filtered.length > 0) {
+        heroArtist.innerText = filtered[0].artist;
+      } else {
+        heroArtist.innerText = 'No matches';
+      }
+    }
+
+    // initial render
+    renderCards(mediaLibrary);
+
+    // SEARCH events
+    function performSearch() {
+      const query = searchInput.value;
+      filterMedia(query);
+    }
+
+    searchBtn.addEventListener('click', performSearch);
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') performSearch();
+    });
+
+    // extra: reset hero on empty search
+    searchInput.addEventListener('input', function() {
+      if (this.value.trim() === '') {
+        renderCards(mediaLibrary);
+        heroArtist.innerText = 'The Weeknd';
+      }
+    });
+
+    // ----- small extra: click on avatar shows info
+    document.querySelector('.avatar')?.addEventListener('click', function() {
+      alert('👤 You are logged in as DemoUser\n\nDownload any song/video with one click!');
+    });
+
+  })();
+</script>
+
+</body>
+</html>
