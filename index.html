@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; background: #f4f4f9; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .buttons { display: flex; gap: 10px; }
+        button { flex: 1; padding: 10px; cursor: pointer; border: none; border-radius: 4px; color: white; }
+        .btn-mp3 { background: #e74c3c; }
+        .btn-mp4 { background: #27ae60; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Media Downloader</h2>
+    <input type="text" id="url" placeholder="Paste YouTube link here...">
+    <div class="buttons">
+        <button class="btn-mp3" onclick="download('mp3')">Download MP3</button>
+        <button class="btn-mp4" onclick="download('mp4')">Download MP4</button>
+    </div>
+</div>
+
+<script>
+    function download(format) {
+        const url = document.getElementById('url').value;
+        if (!url) return alert("Please enter a URL");
+        // Replace with your actual API endpoint
+        window.location.href = `https://api.yourdomain.com/download?url=${encodeURIComponent(url)}&format=${format}`;
+    }
+</script>
+
+</body>
+</html>
