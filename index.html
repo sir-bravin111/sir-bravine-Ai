@@ -3,203 +3,139 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>sir bravin· music & video</title>
+  <title>sir bravin music</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto',Arial,sans-serif}
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Roboto,Arial,sans-serif}
     body{background:#0f0f0f;color:#f1f1f1;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px 16px 40px}
-   .app-wrapper{max-width:1200px;width:100%;background:#181818;border-radius:32px;padding:24px 28px 32px;box-shadow:0 20px 40px rgba(0,0,0,0.8);border:1px solid #2a2a2a}
-   .top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px 12px;padding-bottom:20px;border-bottom:1px solid #2a2a2a;margin-bottom:28px}
-   .logo-area{display:flex;align-items:center;gap:10px}
-   .logo-icon{font-size:32px;color:#ff0033;background:#1a1a1a;padding:6px 10px;border-radius:40px;box-shadow:0 0 0 1px #2a2a2a}
-   .logo-text{font-size:24px;font-weight:700;letter-spacing:-0.5px;background:linear-gradient(135deg,#ff0033,#ff4d4d);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-   .logo-text span{font-weight:300;-webkit-text-fill-color:#aaa}
-   .search-box{flex:1 1 320px;display:flex;align-items:center;background:#222;border-radius:40px;padding:0 6px 0 20px;border:1px solid #3a3a3a;transition:0.2s}
-   .search-box:focus-within{border-color:#ff0033;box-shadow:0 0 0 2px rgba(255,0,51,0.3)}
-   .search-box input{flex:1;background:transparent;border:none;padding:14px 6px;color:#f1f1f1;font-size:16px;outline:none;min-width:100px}
-   .search-box button{background:transparent;border:none;color:#aaa;font-size:20px;padding:10px 18px;cursor:pointer;border-radius:40px}
-   .search-box button:hover{color:#fff;background:#333}
-   .hero-section{display:flex;flex-wrap:wrap;gap:24px 32px;background:#1e1e1e;border-radius:28px;padding:24px 28px;margin-bottom:36px;border:1px solid #2c2c2c;align-items:center}
-   .artist-card{display:flex;align-items:center;gap:18px;flex:1 1 200px}
-   .artist-picture{width:80px;height:80px;border-radius:50%;background:linear-gradient(145deg,#2a2a2a,#1a1a1a);display:flex;align-items:center;justify-content:center;font-size:42px;color:#ff4d4d;border:2px solid #3a3a3a;flex-shrink:0}
-   .section-title{font-size:20px;font-weight:500;margin-bottom:18px;display:flex;align-items:center;gap:12px;border-left:4px solid #ff0033;padding-left:16px}
-   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px 20px;margin-top:6px}
-   .media-card{background:#1f1f1f;border-radius:20px;overflow:hidden;border:1px solid #2a2a2a;transition:0.25s;display:flex;flex-direction:column}
-   .media-card:hover{transform:translateY(-6px);border-color:#ff4d4d;box-shadow:0 12px 28px rgba(255,0,51,0.15)}
-   .card-thumb{width:100%;aspect-ratio:16/9;background:#2a2a2a;position:relative;overflow:hidden}
-   .card-thumb img{width:100%;height:100%;object-fit:cover}
-   .card-thumb.type-tag{position:absolute;bottom:10px;right:12px;background:#0f0f0fcc;backdrop-filter:blur(4px);padding:4px 12px;border-radius:30px;font-size:12px;font-weight:600;color:#eee;border:1px solid #3a3a3a}
-   .card-body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:8px}
-   .card-title{font-weight:600;font-size:16px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-   .card-artist{color:#aaa;font-size:13px}
-   .card-meta{display:flex;gap:12px;font-size:12px;color:#888}
-   .card-actions{display:flex;gap:8px;margin-top:12px;border-top:1px solid #2c2c2c;padding-top:14px}
-   .btn-download{background:#ff0033;border:none;color:white;font-weight:600;padding:8px 16px;border-radius:40px;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:0.2s;flex:1;justify-content:center}
-   .btn-download:hover{background:#cc0028}
-   .btn-download.secondary{background:#2a2a2a}
-   .btn-download.secondary:hover{background:#3a3a3a}
-   .btn-download.loading{opacity:0.6;pointer-events:none}
-   .footer-note{margin-top:32px;text-align:center;color:#555;font-size:13px;border-top:1px solid #252525;padding-top:22px}
-   .loader{text-align:center;grid-column:1/-1;padding:40px;color:#888}
+    .app-wrapper{max-width:900px;width:100%;background:#181818;border-radius:32px;padding:24px 28px 32px;border:1px solid #2a2a2a}
+    .top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:20px;border-bottom:1px solid #2a2a2a;margin-bottom:20px}
+    .logo-text{font-size:24px;font-weight:700} .logo-text span{color:#aaa;font-weight:300}
+    .search-box{flex:1 1 300px;display:flex;align-items:center;background:#222;border-radius:40px;padding:0 6px 0 20px;border:1px solid #3a3a3a}
+    .search-box input{flex:1;background:transparent;border:none;padding:14px 6px;color:#fff;font-size:16px;outline:none}
+    .search-box button{background:transparent;border:none;color:#aaa;font-size:18px;padding:10px 16px;cursor:pointer}
+
+    .grid{display:flex;flex-direction:column;gap:20px}
+    .media-card{background:#1f1f1f;border-radius:20px;overflow:hidden;border:1px solid #2a2a2a}
+    .card-thumb{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
+    .card-thumb img.thumb-img{width:100%;height:100%;object-fit:cover}
+    .card-thumb iframe{width:100%;height:100%;border:0;display:none}
+    .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25)}
+    .play-btn{width:68px;height:68px;border-radius:50%;background:rgba(0,0,0,0.7);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;transition:0.2s}
+    .play-btn:hover{transform:scale(1.08);background:#ff0033;border-color:#ff0033}
+    .duration-badge{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.85);padding:3px 7px;border-radius:6px;font-size:12px}
+    .card-info{display:flex;gap:12px;padding:12px 14px}
+    .channel-avatar{width:40px;height:40px;border-radius:50%;background:#2a2a2a;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .channel-avatar img{width:100%;height:100%;object-fit:cover}
+    .card-title{font-weight:600;font-size:16px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .card-artist{color:#aaa;font-size:14px;margin-top:4px}
+    .card-controls{display:flex;gap:8px;padding:0 14px 14px}
+    .btn-ctrl{flex:1;background:#2a2a2a;border:1px solid #333;color:#fff;padding:10px;border-radius:40px;cursor:pointer;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn-ctrl.play{background:#ff0033;border-color:#ff0033} .btn-ctrl:hover{opacity:0.9}
+    .loader{text-align:center;padding:40px;color:#888}
   </style>
 </head>
 <body>
 <div class="app-wrapper">
   <div class="top-bar">
-    <div class="logo-area">
-      <div class="logo-icon"><i class="fab fa-youtube"></i></div>
-      <div class="logo-text">SIR BRAVIN<span>DOWNLOADER</span></div>
-    </div>
+    <div class="logo-text">SIR BRAVIN<span> MUSIC</span></div>
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search songs, artists, videos...">
+      <input id="searchInput" placeholder="Search songs, artists...">
       <button id="searchBtn"><i class="fas fa-search"></i></button>
     </div>
   </div>
-
-  <div class="hero-section">
-    <div class="artist-card">
-      <div class="artist-picture"><i class="fas fa-fire"></i></div>
-      <div>
-        <div style="font-size:18px;font-weight:600" id="heroArtist">Search anything</div>
-        <div style="font-size:13px;color:#aaa" id="heroSub">Real sir bravin downloader - give us feed back</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-title"><i class="fas fa-headphones-alt"></i> Results</div>
-  <div class="grid" id="mediaGrid">
-    <div class="loader"><i class="fas fa-music"></i><br><br>Type a song and press Enter</div>
-  </div>
-
-  <div class="footer-note">AURA-BXMD • High quality audio/video</div>
+  <div class="grid" id="mediaGrid"><div class="loader">Type a song and press Enter - demo data below</div></div>
 </div>
 
 <script>
-  // ===== YOUR CLEAN APIS - NO KEY =====
-  const AUDIO_APIS = [
-    url => `https://apis.davidcyriltech.my.id/download/ytmp3?url=${encodeURIComponent(url)}`,
-    url => `https://www.dark-yasiya-api.site/download/ytmp3?url=${encodeURIComponent(url)}`,
-    url => `https://api.dreaded.site/api/ytdl/audio?url=${encodeURIComponent(url)}`
-  ];
-
-  const VIDEO_APIS = [
-    url => `https://apis.davidcyriltech.my.id/download/ytmp4?url=${encodeURIComponent(url)}`,
-    url => `https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(url)}`,
-    url => `https://api.dreaded.site/api/ytdl/video?url=${encodeURIComponent(url)}`
-  ];
-
-  // YouTube search API (key-free)
-  const SEARCH_APIS = [
-    q => `https://apis.davidcyriltech.my.id/youtube/search?query=${encodeURIComponent(q)}`,
-    q => `https://www.dark-yasiya-api.site/search/yts?query=${encodeURIComponent(q)}`
-  ];
-
   const grid = document.getElementById('mediaGrid');
-  const searchInput = document.getElementById('searchInput');
-  const heroArtist = document.getElementById('heroArtist');
-  const heroSub = document.getElementById('heroSub');
+  // DEMO DATA - replace with YouTube Data API v3 search results lawfully
+  const demoVideos = [
+    {id:'dQw4w9WgXcQ', title:'DJ Afro Latest Mix 2026', channel:'Trova adits', thumb:'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg', avatar:'T'},
+    {id:'jNQXAC9IVRw', title:'Auto Clearance - Everything Must Go Mix', channel:'Van Life Music', thumb:'https://img.youtube.com/vi/jNQXAC9IVRw/hqdefault.jpg', avatar:'V'},
+  ];
 
-  async function searchYouTube(query) {
-    grid.innerHTML = `<div class="loader"><i class="fas fa-spinner fa-spin"></i><br><br>Searching YouTube for "${query}"...</div>`;
-    for (let apiFn of SEARCH_APIS) {
-      try {
-        const res = await fetch(apiFn(query));
-        const data = await res.json();
-        const videos = data.result || data.results || data.videos || data;
-        if (Array.isArray(videos) && videos.length > 0) {
-          return videos.slice(0, 12);
-        }
-        if (data.result && Array.isArray(data.result.videos)) return data.result.videos.slice(0,12);
-      } catch(e){ continue; }
-    }
-    return null;
+  function render(videos){
+    grid.innerHTML = videos.map(v=>`
+      <div class="media-card" data-id="${v.id}">
+        <div class="card-thumb" id="thumb-${v.id}">
+          <img class="thumb-img" src="${v.thumb}">
+          <iframe id="player-${v.id}" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          <div class="play-overlay" id="overlay-${v.id}">
+            <div class="play-btn" onclick="togglePlay('${v.id}')"><i class="fas fa-play" id="icon-${v.id}"></i></div>
+          </div>
+          <span class="duration-badge">▶️ YouTube</span>
+        </div>
+        <div class="card-info">
+          <div class="channel-avatar">${v.avatar}</div>
+          <div style="flex:1;min-width:0">
+            <div class="card-title">${v.title}</div>
+            <div class="card-artist">${v.channel} • 1.4M views • 2 months ago</div>
+          </div>
+        </div>
+        <div class="card-controls">
+          <button class="btn-ctrl play" id="btn-${v.id}" onclick="togglePlay('${v.id}')">
+            <i class="fas fa-play"></i> <span>Play</span>
+          </button>
+          <button class="btn-ctrl" onclick="window.open('https://www.youtube.com/watch?v=${v.id}','_blank')">
+            <i class="fab fa-youtube"></i> Open
+          </button>
+        </div>
+      </div>
+    `).join('');
   }
 
-  async function getDownloadLink(youtubeUrl, type) {
-    const apis = type === 'audio'? AUDIO_APIS : VIDEO_APIS;
-    for (let apiFn of apis) {
-      try {
-        const res = await fetch(apiFn(youtubeUrl));
-        const data = await res.json();
-        const r = data.result || data;
-        const link = r.download_url || r.downloadUrl || r.url || data.downloadUrl || data.url;
-        if (link) return { url: link, title: r.title || 'download' };
-      } catch(e){ continue; }
-    }
-    return null;
-  }
+  let currentPlaying = null;
 
-  function renderCards(videos) {
-    if (!videos || videos.length === 0) {
-      grid.innerHTML = `<div class="loader">No results found</div>`;
+  function togglePlay(id){
+    const player = document.getElementById(`player-${id}`);
+    const thumbImg = document.querySelector(`#thumb-${id} .thumb-img`);
+    const overlay = document.getElementById(`overlay-${id}`);
+    const btn = document.getElementById(`btn-${id}`);
+    const icon = document.getElementById(`icon-${id}`);
+
+    // pause if same video is playing
+    if(currentPlaying === id){
+      player.style.display = 'none';
+      player.src = '';
+      thumbImg.style.display = 'block';
+      overlay.style.display = 'flex';
+      btn.innerHTML = '<i class="fas fa-play"></i> <span>Play</span>';
+      btn.classList.add('play');
+      icon.className = 'fas fa-play';
+      currentPlaying = null;
       return;
     }
-    heroArtist.innerText = videos[0].author?.name || videos[0].channel || 'YouTube Results';
-    heroSub.innerText = `${videos.length} results found`;
 
-    grid.innerHTML = videos.map(v => {
-      const thumb = v.thumbnail || v.thumbnails?.[0]?.url || `https://img.youtube.com/vi/${v.videoId || v.id}/hqdefault.jpg`;
-      const title = v.title || v.name || 'Untitled';
-      const channel = v.author?.name || v.channel || v.author || 'YouTube';
-      const duration = v.timestamp || v.duration || v.time || '';
-      const videoId = v.videoId || v.id || '';
-      const url = v.url || `https://www.youtube.com/watch?v=${videoId}`;
-
-      return `
-        <div class="media-card">
-          <div class="card-thumb">
-            <img src="${thumb}" loading="lazy">
-            <span class="type-tag">${duration}</span>
-          </div>
-          <div class="card-body">
-            <div class="card-title">${title}</div>
-            <div class="card-artist"><i class="fas fa-user-circle"></i> ${channel}</div>
-            <div class="card-meta"><i class="fas fa-link"></i> youtube.com/watch?v=${videoId.slice(0,6)}...</div>
-            <div class="card-actions">
-              <button class="btn-download" onclick="downloadNow('${url}', 'audio', this)"><i class="fas fa-music"></i> MP3</button>
-              <button class="btn-download secondary" onclick="downloadNow('${url}', 'video', this)"><i class="fas fa-video"></i> MP4</button>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  async function downloadNow(youtubeUrl, type, btn) {
-    const original = btn.innerHTML;
-    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading`;
-    btn.classList.add('loading');
-    try {
-      const result = await getDownloadLink(youtubeUrl, type);
-      if (!result) throw new Error('Server busy');
-
-      // Trigger real download
-      const a = document.createElement('a');
-      a.href = result.url;
-      a.download = `${result.title}.${type === 'audio'? 'mp3' : 'mp4'}`;
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      btn.innerHTML = `<i class="fas fa-check"></i> Done`;
-      setTimeout(()=> { btn.innerHTML = original; btn.classList.remove('loading'); }, 2000);
-    } catch (e) {
-      btn.innerHTML = `<i class="fas fa-times"></i> Failed`;
-      alert('Download failed, try another server. Error: ' + e.message);
-      setTimeout(()=> { btn.innerHTML = original; btn.classList.remove('loading'); }, 2000);
+    // pause previous
+    if(currentPlaying){
+      const prevPlayer = document.getElementById(`player-${currentPlaying}`);
+      const prevThumb = document.querySelector(`#thumb-${currentPlaying} .thumb-img`);
+      const prevOverlay = document.getElementById(`overlay-${currentPlaying}`);
+      const prevBtn = document.getElementById(`btn-${currentPlaying}`);
+      const prevIcon = document.getElementById(`icon-${currentPlaying}`);
+      if(prevPlayer){ prevPlayer.style.display='none'; prevPlayer.src=''; }
+      if(prevThumb) prevThumb.style.display='block';
+      if(prevOverlay) prevOverlay.style.display='flex';
+      if(prevBtn){ prevBtn.innerHTML='<i class="fas fa-play"></i> <span>Play</span>'; prevBtn.classList.add('play'); }
+      if(prevIcon) prevIcon.className='fas fa-play';
     }
+
+    // play new - lawful embed autoplay
+    player.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+    player.style.display = 'block';
+    thumbImg.style.display = 'none';
+    overlay.style.display = 'none';
+    btn.innerHTML = '<i class="fas fa-pause"></i> <span>Pause</span>';
+    btn.classList.remove('play');
+    btn.style.background = '#444';
+    currentPlaying = id;
   }
 
-  async function doSearch() {
-    const q = searchInput.value.trim();
-    if (!q) return;
-    const results = await searchYouTube(q);
-    if (results) renderCards(results);
-    else grid.innerHTML = `<div class="loader">API limit reached. Try again later or change keyword.</div>`;
-  }
+  render(demoVideos);
 
-  document.getElementById('searchBtn').addEventListener('click', doSearch);
-  searchInput.addEventListener('keydown', e => { if(e.key === 'Enter') doSearch(); });
+  // hook search - you should connect YouTube Data API v3 here
+  document.getElementById('searchBtn').onclick = () => render(demoVideos);
 </script>
 </body>
 </html>
